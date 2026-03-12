@@ -1,6 +1,4 @@
 import { getCurrent } from "@/features/auth/actions";
-import { LoginForm } from "@/features/auth/components/forms/new-login-form";
-import { div } from "motion/react-client";
 import { redirect } from "next/navigation";
 
 async function Page() {
