@@ -2,7 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { useLogout } from "../api/use-logout";
-import { LuLoader, LuLogOut, LuX } from "react-icons/lu";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Loader, LogOut, X } from "@hugeicons/core-free-icons";
 
 function LogoutButton({ className }: { className?: string }) {
   const { mutate: logout, isPending } = useLogout();
@@ -11,12 +12,12 @@ function LogoutButton({ className }: { className?: string }) {
     <Button onClick={() => logout()} disabled={isPending} className={className}>
       {isPending ? (
         <>
-          <LuLoader className="size-4 animate-spin" />
+          <HugeiconsIcon icon={Loader} className="size-4 animate-spin" />
           Déconnexion...
         </>
       ) : (
         <>
-          <LuLogOut className="size-4" />
+          <HugeiconsIcon icon={LogOut} className="size-4" />
           Se deconnecter
         </>
       )}
@@ -34,7 +35,7 @@ export function NotMeButton({ textClassName, iconClassName }: { textClassName?: 
       disabled={isPending}
       className={`flex items-center gap-2 ${textClassName}`}
     >
-      <LuX className={iconClassName} />
+      <HugeiconsIcon icon={X} className={iconClassName} />
       {isPending ? "Déconnexion..." : "Ce n'est pas moi"}
     </Button>
   );

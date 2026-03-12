@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 export const useRegister = () => {
   const router = useRouter();
@@ -17,13 +18,26 @@ export const useRegister = () => {
         password: json.password,
         name: json.name,
       });
+
+      if (result.error) {
+        throw result.error;
+      }
+
       return result;
     },
     onSuccess: () => {
+      toast.success("Inscription réussie", {
+        description: "Redirection vers votre espace...",
+      });
       queryClient.invalidateQueries({
         queryKey: ["current"],
       });
-      router.push("/workspaces/hello");
+      router.refresh();
+    },
+    onError: (error) => {
+      toast.error("Erreur d'inscription", {
+        description: error.message,
+      });
     },
   });
 

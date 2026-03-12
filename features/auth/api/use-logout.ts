@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 export const useLogout = () => {
   const router = useRouter();
@@ -11,8 +12,8 @@ export const useLogout = () => {
       await authClient.signOut();
     },
     onSuccess: () => {
+      toast.success("Déconnexion réussie");
       queryClient.clear();
-      router.push("/login");
       router.refresh();
     },
   });

@@ -1,28 +1,51 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { registerSchema } from "../../schemas";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useRegister } from "../../api/use-register";
-import { OAuthButtons } from "../oauth-buttons";
-import { useEffect, useState } from "react";
+//IMPORTS -----------------------------------------
 
-export function RegisterForm() {
-  
-  const { mutate } = useRegister();
-  
+//HOOKS
+import { useState } from "react";
+import { useLogin } from "../../api/use-login";
+import { Controller, useForm } from "react-hook-form";
+
+//FORMS UTILITIES
+import { loginSchema, registerSchema } from "../../schemas";
+import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+
+//COMPONENTS
+import { Button } from "@/components/ui/button";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+
+//ICONS
+import { ViewIcon, ViewOffIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useRegister } from "../../api/use-register";
+
+//CODE OF THE COMPONENT -----------------------------------------
+
+export default function RegisterForm() {
+  const [showPassword, setShowPassword] = useState(false);
+
+  const { mutate, isPending } = useRegister();
+
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -31,69 +54,124 @@ export function RegisterForm() {
       password: "",
     },
   });
-  
-  function onSubmit(values: z.infer<typeof registerSchema>) {
-    mutate({ json: values });
+
+  function onSubmit(data: z.infer<typeof registerSchema>) {
+    mutate({
+      json: data,
+    });
   }
-  
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
-  if (!mounted) return <div>Chargement...</div>;
-  
   return (
-    <div className="space-y-6">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nom</FormLabel>
-                <FormControl>
-                  <Input placeholder="Nom" {...field} />
-                </FormControl>
-                <FormDescription>Votre nom</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="email@domaine.fr" {...field} />
-                </FormControl>
-                <FormDescription>Votre adresse email</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Mot de passe</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="********" {...field} />
-                </FormControl>
-                <FormDescription>Votre mot de passe</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit">S'inscrire</Button>
-        </form>
-      </Form>
-
-      <OAuthButtons />
+    <div className="flex gap-4 h-screen w-screen">
+      <div className="w-1/2 h-full flex items-center justify-center p-8">
+        <Card className="w-full sm:max-w-md">
+          <CardHeader>
+            <CardTitle>Inscription</CardTitle>
+            <CardDescription>Créez votre compte.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form id="form-register" onSubmit={form.handleSubmit(onSubmit)}>
+              <FieldGroup>
+                <Controller
+                  name="name"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="name">Nom</FieldLabel>
+                      <Input
+                        {...field}
+                        id="name"
+                        disabled={isPending}
+                        aria-invalid={fieldState.invalid}
+                        placeholder="Nom"
+                        autoComplete="off"
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  name="email"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="email">Email</FieldLabel>
+                      <Input
+                        {...field}
+                        id="email"
+                        disabled={isPending}
+                        aria-invalid={fieldState.invalid}
+                        placeholder="[EMAIL_ADDRESS]"
+                        autoComplete="off"
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  name="password"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="password">
+                        Mot de passe
+                      </FieldLabel>
+                      <div className="relative">
+                        <Input
+                          {...field}
+                          id="password"
+                          type={showPassword ? "text" : "password"}
+                          disabled={isPending}
+                          aria-invalid={fieldState.invalid}
+                          placeholder="Mot de passe"
+                          autoComplete="off"
+                        />
+                        <div
+                          className="absolute right-1 top-1/2 -translate-y-1/2 cursor-pointer h-[70%] aspect-square flex items-center justify-center hover:bg-zinc-950/10 rounded-sm"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <HugeiconsIcon
+                              icon={ViewOffIcon}
+                              size={10}
+                              aria-label="Masquer le mot de passe"
+                            />
+                          ) : (
+                            <HugeiconsIcon
+                              icon={ViewIcon}
+                              size={10}
+                              aria-label="Afficher le mot de passe"
+                            />
+                          )}
+                        </div>
+                      </div>
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+              </FieldGroup>
+            </form>
+          </CardContent>
+          <CardFooter>
+            <Field orientation="horizontal">
+              <Button type="submit" form="form-register" disabled={isPending}>
+                S'inscrire
+              </Button>
+            </Field>
+          </CardFooter>
+        </Card>
+      </div>
+      <div className="w-1/2 h-full p-8">
+        <div className="bg-zinc-200 rounded-2xl w-full h-full flex items-center justify-center">
+          TO IMPLEMENT
+        </div>
+      </div>
     </div>
   );
 }
