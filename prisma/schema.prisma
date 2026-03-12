@@ -21,11 +21,15 @@ model User {
   email         String   @unique
   emailVerified Boolean  @default(false)
   image         String?
+  isSuperAdmin  Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   accounts Account[]
   sessions Session[]
+
+  organizations Organization[]
+  organizationMembers OrganizationMember[]
 
   @@map("user")
 }
@@ -73,4 +77,46 @@ model Verification {
   updatedAt  DateTime @updatedAt
 
   @@map("verification")
+}
+
+// ============================================
+// FEATURE: ORGANIZATIONS
+// ============================================
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique 
+
+  ownerId   String
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  
+  organizationMembers OrganizationMember[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("organization")
+}
+
+model OrganizationMember {
+  id        String   @id @default(cuid())
+  role      Role
+
+  organizationId String
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  userId    String
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("organization_member")
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
 }
