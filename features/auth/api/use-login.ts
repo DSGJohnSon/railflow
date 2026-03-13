@@ -2,26 +2,27 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { authKeys } from "../keys";
+
+type LoginInput = {
+  json: {
+    email: string;
+    password: string;
+  };
+};
 
 export const useLogin = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<
-    any,
-    Error,
-    { json: { email: string; password: string } }
-  >({
-    mutationFn: async ({ json }) => {
+  const mutation = useMutation({
+    mutationFn: async ({ json }: LoginInput) => {
       const result = await authClient.signIn.email({
         email: json.email,
         password: json.password,
       });
 
-      if (result.error) {
-        throw result.error;
-      }
-
+      if (result.error) throw result.error;
       return result;
     },
     onSuccess: () => {
@@ -29,13 +30,13 @@ export const useLogin = () => {
         description: "Redirection vers votre espace...",
       });
       queryClient.invalidateQueries({
-        queryKey: ["current"],
+        queryKey: authKeys.current,
       });
       router.refresh();
     },
     onError: (error) => {
       toast.error("Erreur de connexion", {
-        description: error.message
+        description: error.message,
       });
     },
   });

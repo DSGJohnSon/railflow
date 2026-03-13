@@ -11,7 +11,3 @@ export const createOrganizationSchema = z.object({
         "Le slug doit contenir uniquement des lettres minuscules, des chiffres et des tirets (ex: mon-organisation)",
     }),
 });
-
-export const getOrganizationQuerySchema = z.object({
-  includeOwner: z.union([z.boolean(), z.string()]).transform((v) => v === true || v === "true"),
-});

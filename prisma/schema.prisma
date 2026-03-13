@@ -11,7 +11,6 @@ datasource db {
   provider = "postgresql"
 }
 
-
 // ============================================
 // FEATURE: AUTH
 // ============================================
@@ -28,8 +27,10 @@ model User {
   accounts Account[]
   sessions Session[]
 
-  organizations Organization[]
+  organizations       Organization[]
   organizationMembers OrganizationMember[]
+  projects            Project[]
+  projectMembers      ProjectMember[]
 
   @@map("user")
 }
@@ -49,7 +50,7 @@ model Session {
 }
 
 model Account {
-  id                    String     @id
+  id                    String    @id
   accountId             String
   providerId            String
   userId                String
@@ -60,9 +61,9 @@ model Account {
   refreshTokenExpiresAt DateTime?
   scope                 String?
   password              String?
-  createdAt             DateTime   @default(now())
-  updatedAt             DateTime   @updatedAt
-  user                  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   workspaceId           String?
 
   @@map("account")
@@ -84,34 +85,36 @@ model Verification {
 // ============================================
 
 model Organization {
-  id        String   @id @default(cuid())
-  name      String
-  slug      String   @unique 
+  id   String @id @default(cuid())
+  name String
+  slug String @unique
 
-  ownerId   String
-  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
   organizationMembers OrganizationMember[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  projects  Project[]
 
   @@map("organization")
 }
 
 model OrganizationMember {
-  id        String   @id @default(cuid())
-  role      Role
+  id   String @id @default(cuid())
+  role Role
 
   organizationId String
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
-  userId    String
-  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([organizationId, userId])
   @@map("organization_member")
 }
 
@@ -119,4 +122,46 @@ enum Role {
   OWNER
   ADMIN
   MEMBER
+}
+
+// ============================================
+// FEATURE: PROJECTS
+// ============================================
+
+model Project {
+  id          String  @id @default(cuid())
+  name        String
+  slug        String
+  description String?
+
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  projectMembers ProjectMember[]
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([organizationId, slug])
+  @@map("project")
+}
+
+model ProjectMember {
+  id   String @id @default(cuid())
+  role Role
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, userId])
+  @@map("project_member")
 }

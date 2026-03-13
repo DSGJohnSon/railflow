@@ -2,27 +2,29 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { authKeys } from "../keys";
+
+type RegisterInput = {
+  json: {
+    email: string;
+    password: string;
+    name: string;
+  };
+};
 
 export const useRegister = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<
-    any,
-    Error,
-    { json: { email: string; password: string; name: string } }
-  >({
-    mutationFn: async ({ json }) => {
+  const mutation = useMutation({
+    mutationFn: async ({ json }: RegisterInput) => {
       const result = await authClient.signUp.email({
         email: json.email,
         password: json.password,
         name: json.name,
       });
 
-      if (result.error) {
-        throw result.error;
-      }
-
+      if (result.error) throw result.error;
       return result;
     },
     onSuccess: () => {
@@ -30,7 +32,7 @@ export const useRegister = () => {
         description: "Redirection vers votre espace...",
       });
       queryClient.invalidateQueries({
-        queryKey: ["current"],
+        queryKey: authKeys.current,
       });
       router.refresh();
     },

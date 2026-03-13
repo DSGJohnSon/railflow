@@ -1,101 +1,54 @@
-import { sessionMiddleware } from "@/lib/middlewares/session-middleware";
+//HONO & ZOD
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
-import { createOrganizationSchema, getOrganizationQuerySchema } from "../schemas";
+import { createOrganizationSchema } from "../schemas";
+
+//PRISMA
 import { prisma } from "@/lib/prisma";
-import { adminSessionMiddleware } from "@/lib/middlewares/admin-session-middleware";
-import { organizationSessionMiddleware } from "@/lib/middlewares/organization-session-middleware";
+
+//MIDDLEWARES
+import { requireAuth } from "@/lib/middlewares/api/require-auth";
+import { isUniqueConstraint } from "@/lib/prisma-errors";
+
+// END OF IMPORTS ------------------------------------------------------------------
+
 const app = new Hono()
   //******************** */
-  //Créer un workspace
+  //Créer une organisation
   //******************** */
   .post(
     "/",
-    sessionMiddleware,
+    requireAuth,
     zValidator("json", createOrganizationSchema),
     async (c) => {
-      const { name, slug } = c.req.valid("json");
       const user = c.get("user");
+      const { name, slug } = c.req.valid("json");
 
-      if (!user) {
-        return c.json({ error: "Utilisateur non trouvé" }, 401);
-      }
-
-      const organization = await prisma.organization.create({
-        data: {
-          name,
-          slug,
-          ownerId: user.id,
-          organizationMembers: {
-            create: {
-              role: "OWNER",
-              userId: user.id,
+      try {
+        const organization = await prisma.organization.create({
+          data: {
+            name,
+            slug,
+            ownerId: user.id,
+            organizationMembers: {
+              create: {
+                role: "OWNER",
+                userId: user.id,
+              },
             },
           },
-        },
-      });
-
-      return c.json({ data: organization });
-    }
-  )
-  //******************** */
-  //Récupérer tous les workspaces
-  //******************** */
-  .get("/", sessionMiddleware, adminSessionMiddleware, async (c, ) => {
-    const organizations = await prisma.organization.findMany();
-    return c.json({ data: organizations });
-  })
-  .get(
-    "/me",
-    sessionMiddleware,
-    async (c) => {
-      const user = c.get("user");
-
-      if (!user) {
-        return c.json({ error: "Utilisateur non trouvé" }, 401);
+        });
+        return c.json({ success: true, data: organization }, 201);
+      } catch (error) {
+        if (isUniqueConstraint(error)) {
+          return c.json(
+            { success: false, error: "Ce slug est deja utilise" },
+            409,
+          );
+        }
+        throw error;
       }
-
-      const organization = await prisma.organizationMember.findMany({
-        where: {
-          userId: user.id,
-        },
-        select: {
-          role: true,
-          organization: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-            }
-          },
-        },
-      });
-
-      return c.json({ data: organization });
-    }
-  )
-  .get(
-    "/:organizationSlug",
-    sessionMiddleware,
-    organizationSessionMiddleware,
-    zValidator("query", getOrganizationQuerySchema),
-    async (c) => {
-      const { organizationSlug } = c.req.param();
-      const { includeOwner } = c.req.valid("query");
-
-      // Get optional query parameters for including related data
-      const withOrganizationOwnerData = includeOwner || false;
-
-      const organization = await prisma.organization.findUnique({
-        where: {
-          slug: organizationSlug,
-        },
-        include: {
-          owner: withOrganizationOwnerData,
-        },
-      });
-
-      return c.json({ data: organization });
-    }
+    },
   );
+
 export default app;

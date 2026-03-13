@@ -1,12 +1,18 @@
-"use client"
+"use client";
 
-import { useTheme } from "next-themes"
-import { Toaster as Sonner, type ToasterProps } from "sonner"
-import { HugeiconsIcon } from "@hugeicons/react"
-import { CheckmarkCircle02Icon, InformationCircleIcon, Alert02Icon, MultiplicationSignCircleIcon, Loading03Icon } from "@hugeicons/core-free-icons"
+import { useTheme } from "next-themes";
+import { Toaster as Sonner, type ToasterProps } from "sonner";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  CheckmarkCircle02Icon,
+  InformationCircleIcon,
+  Alert02Icon,
+  MultiplicationSignCircleIcon,
+  Loading03Icon,
+} from "@hugeicons/core-free-icons";
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
+  const { theme = "system" } = useTheme();
 
   return (
     <Sonner
@@ -59,7 +65,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       toastOptions={{
         classNames: {
           toast:
-            "group toast font-sans bg-background text-foreground border-zinc-300 !shadow-none rounded-t-md transition-all duration-300 relative overflow-hidden before:absolute before:bottom-0 before:left-0 before:h-1 before:bg-[var(--toast-timer,theme(colors.zinc.400))] before:opacity-50 before:animate-[toast-progress_4s_linear_forwards] hover:before:[animation-play-state:paused]",
+            "group toast font-sans bg-background text-foreground border-olive-300 !shadow-none rounded-t-md transition-all duration-300 relative overflow-hidden before:absolute before:bottom-0 before:left-0 before:h-1 before:bg-[var(--toast-timer,theme(colors.olive.400))] before:opacity-50 before:animate-[toast-progress_4s_linear_forwards] hover:before:[animation-play-state:paused]",
           description: "font-sans !text-current/80",
           actionButton:
             "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground font-sans",
@@ -76,7 +82,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }}
       {...props}
     />
-  )
-}
+  );
+};
 
-export { Toaster }
+export { Toaster };

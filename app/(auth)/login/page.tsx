@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 async function Page() {
   const user = await getCurrent();
-  if (user) redirect("/org");
+  if (user) redirect("/dashboard");
 
   return (
     <div className="w-screen h-screen">

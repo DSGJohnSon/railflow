@@ -15,26 +15,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
-  FieldLegend,
-  FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-
-//ICONS
-import { ViewIcon, ViewOffIcon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 //CODE OF THE COMPONENT -----------------------------------------
 
@@ -63,7 +48,7 @@ export default function CreateOrganizationForm() {
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="name">Nom de l'organisation</FieldLabel>
+              <FieldLabel htmlFor="name">Nom de l&apos;organisation</FieldLabel>
               <Input
                 {...field}
                 id="name"
@@ -107,7 +92,7 @@ export default function CreateOrganizationForm() {
         />
         <Field orientation="horizontal">
           <Button type="submit" form="form-create-organization" disabled={isPending}>
-            Créer l'organisation
+            Créer l&apos;organisation
           </Button>
         </Field>
       </FieldGroup>

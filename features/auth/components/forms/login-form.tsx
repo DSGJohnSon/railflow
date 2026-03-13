@@ -11,18 +11,14 @@ import { Controller, useForm } from "react-hook-form";
 import { loginSchema } from "../../schemas";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
 
 //COMPONENTS
 import { Button } from "@/components/ui/button";
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
-  FieldLegend,
-  FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
@@ -95,9 +91,7 @@ export default function LoginForm() {
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor="password">
-                        Mot de passe
-                      </FieldLabel>
+                      <FieldLabel htmlFor="password">Mot de passe</FieldLabel>
                       <div className="relative">
                         <Input
                           {...field}
@@ -109,7 +103,7 @@ export default function LoginForm() {
                           autoComplete="off"
                         />
                         <div
-                          className="absolute right-1 top-1/2 -translate-y-1/2 cursor-pointer h-[70%] aspect-square flex items-center justify-center hover:bg-zinc-950/10 rounded-sm"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 cursor-pointer h-[70%] aspect-square flex items-center justify-center hover:bg-olive-950/10 rounded-sm"
                           onClick={() => setShowPassword(!showPassword)}
                         >
                           {showPassword ? (
@@ -146,7 +140,7 @@ export default function LoginForm() {
         </Card>
       </div>
       <div className="w-1/2 h-full p-8">
-        <div className="bg-zinc-200 rounded-2xl w-full h-full flex items-center justify-center">
+        <div className="bg-olive-200 rounded-2xl w-full h-full flex items-center justify-center">
           TO IMPLEMENT
         </div>
       </div>

@@ -7,16 +7,25 @@ export const useLogout = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<any, Error>({
+  return useMutation({
     mutationFn: async () => {
-      await authClient.signOut();
+      const result = await authClient.signOut();
+
+      if (result.error) {
+        throw new Error(result.error.message ?? "Déconnexion impossible");
+      }
+
+      return result;
     },
     onSuccess: () => {
       toast.success("Déconnexion réussie");
       queryClient.clear();
       router.refresh();
     },
+    onError: (error) => {
+      toast.error("Erreur de déconnexion", {
+        description: error.message,
+      });
+    },
   });
-
-  return mutation;
 };

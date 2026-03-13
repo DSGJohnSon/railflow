@@ -4,31 +4,23 @@
 
 //HOOKS
 import { useState } from "react";
-import { useLogin } from "../../api/use-login";
-import { Controller, useForm } from "react-hook-form";
+import { useRegister } from "../../api/use-register";
 
 //FORMS UTILITIES
-import { loginSchema, registerSchema } from "../../schemas";
+import { registerSchema } from "../../schemas";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
+import { Controller, useForm } from "react-hook-form";
 
 //COMPONENTS
 import { Button } from "@/components/ui/button";
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
-  FieldLegend,
-  FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-
-//ICONS
-import { ViewIcon, ViewOffIcon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Card,
   CardContent,
@@ -37,7 +29,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useRegister } from "../../api/use-register";
+
+//ICONS
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ViewIcon, ViewOffIcon } from "@hugeicons/core-free-icons";
 
 //CODE OF THE COMPONENT -----------------------------------------
 
@@ -117,9 +112,7 @@ export default function RegisterForm() {
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor="password">
-                        Mot de passe
-                      </FieldLabel>
+                      <FieldLabel htmlFor="password">Mot de passe</FieldLabel>
                       <div className="relative">
                         <Input
                           {...field}
@@ -131,7 +124,7 @@ export default function RegisterForm() {
                           autoComplete="off"
                         />
                         <div
-                          className="absolute right-1 top-1/2 -translate-y-1/2 cursor-pointer h-[70%] aspect-square flex items-center justify-center hover:bg-zinc-950/10 rounded-sm"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 cursor-pointer h-[70%] aspect-square flex items-center justify-center hover:bg-olive-950/10 rounded-sm"
                           onClick={() => setShowPassword(!showPassword)}
                         >
                           {showPassword ? (
@@ -161,14 +154,14 @@ export default function RegisterForm() {
           <CardFooter>
             <Field orientation="horizontal">
               <Button type="submit" form="form-register" disabled={isPending}>
-                S'inscrire
+                S&apos;inscrire
               </Button>
             </Field>
           </CardFooter>
         </Card>
       </div>
       <div className="w-1/2 h-full p-8">
-        <div className="bg-zinc-200 rounded-2xl w-full h-full flex items-center justify-center">
+        <div className="bg-olive-200 rounded-2xl w-full h-full flex items-center justify-center">
           TO IMPLEMENT
         </div>
       </div>

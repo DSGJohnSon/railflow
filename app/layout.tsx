@@ -4,6 +4,7 @@ import "./globals.css";
 import QueryProvider from "@/components/query-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -13,6 +14,11 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: "RailFlow™ - Dashboard",
   description: "-",
+  icons: {
+    icon: "/logo/logo_icon.svg",
+    shortcut: "/logo/logo_icon.svg",
+    apple: "/logo/logo_icon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -24,8 +30,10 @@ export default function RootLayout({
     <html lang="fr">
       <body className={`${manrope.className} antialiased`}>
         <QueryProvider>
-          <NuqsAdapter>{children}</NuqsAdapter>
-          <Toaster />
+          <TooltipProvider>
+            <NuqsAdapter>{children}</NuqsAdapter>
+            <Toaster />
+          </TooltipProvider>
         </QueryProvider>
       </body>
     </html>
