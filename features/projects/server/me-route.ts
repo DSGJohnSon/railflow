@@ -37,13 +37,23 @@ const app = new Hono()
       },
     });
 
-    const serializedProjects = projects.map((project) => ({
-      role: project.role,
-      id: project.project.id,
-      name: project.project.name,
-      slug: project.project.slug,
-      organizationSlug: project.project.organization.slug,
-    }));
+    const serializedProjects = projects.map(
+      (project: {
+        role: string;
+        project: {
+          id: string;
+          name: string;
+          slug: string;
+          organization: { slug: string };
+        };
+      }) => ({
+        role: project.role,
+        id: project.project.id,
+        name: project.project.name,
+        slug: project.project.slug,
+        organizationSlug: project.project.organization.slug,
+      }),
+    );
 
     return c.json({ success: true, data: serializedProjects }, 200);
   });

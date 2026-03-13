@@ -32,7 +32,7 @@ const app = new Hono()
       },
     });
 
-    const serializedOrganizations = organizations.map((organization) => ({
+    const serializedOrganizations = organizations.map((organization: { role: string; organization: { id: string; name: string; slug: string } }) => ({
       role: organization.role,
       ...organization.organization,
     }));
