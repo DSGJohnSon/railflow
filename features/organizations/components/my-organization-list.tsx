@@ -35,8 +35,8 @@ function MyOrganizationList() {
             </h2>
             <div className="flex items-center justify-center gap-2">
               {organizations?.data
-                .filter((org) => org.role === "OWNER" || org.role === "ADMIN")
-                .map((org) => (
+                .filter((org: { role: string }) => org.role === "OWNER" || org.role === "ADMIN")
+                .map((org: { id: string; slug: string; name: string }) => (
                   <Link
                     key={org.id}
                     href={`/org/${org.slug}`}
@@ -66,8 +66,8 @@ function MyOrganizationList() {
             <div className="flex items-center justify-center gap-2">
               <div className="flex items-center gap-2">
                 {organizations?.data
-                  .filter((org) => org.role === "MEMBER")
-                  .map((org) => (
+                  .filter((org: { role: string }) => org.role === "MEMBER")
+                  .map((org: { id: string; slug: string; name: string }) => (
                     <Link
                       key={org.id}
                       href={`/org/${org.slug}`}

@@ -26,8 +26,8 @@ function MyProjectsList() {
             </h2>
             <div className="flex items-center justify-center gap-2">
               {projects?.data
-                .filter((prj) => prj.role === "OWNER" || prj.role === "ADMIN")
-                .map((prj) => (
+                .filter((prj: { role: string }) => prj.role === "OWNER" || prj.role === "ADMIN")
+                .map((prj: { id: string; organizationSlug: string; slug: string; name: string }) => (
                   <Link
                     key={prj.id}
                     href={`/org/${prj.organizationSlug}/projects/${prj.slug}`}
@@ -46,8 +46,8 @@ function MyProjectsList() {
             <div className="flex items-center justify-center gap-2">
               <div className="flex items-center gap-2">
                 {projects?.data
-                  .filter((prj) => prj.role === "MEMBER")
-                  .map((prj) => (
+                  .filter((prj: { role: string }) => prj.role === "MEMBER")
+                  .map((prj: { id: string; organizationSlug: string; slug: string; name: string }) => (
                     <Link
                       key={prj.id}
                       href={`/org/${prj.organizationSlug}/projects/${prj.slug}`}
