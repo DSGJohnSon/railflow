@@ -116,8 +116,8 @@ function CustomBreadcrumb() {
                     )
                   </DropdownMenuLabel>
                   {organizations?.data
-                    .filter((org) => org.role === "OWNER")
-                    .map((org) => (
+                    .filter((org: { role: string }) => org.role === "OWNER")
+                    .map((org: { id: string; slug: string; name: string }) => (
                       <DropdownMenuItem
                         key={org.id}
                         onClick={() => {
@@ -141,8 +141,8 @@ function CustomBreadcrumb() {
                     )
                   </DropdownMenuLabel>
                   {organizations?.data
-                    .filter((org) => org.role !== "OWNER")
-                    .map((org) => (
+                    .filter((org: { role: string }) => org.role !== "OWNER")
+                    .map((org: { id: string; slug: string; name: string }) => (
                       <DropdownMenuItem
                         key={org.id}
                         onClick={() => {
