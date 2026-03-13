@@ -5,6 +5,7 @@ import * as React from "react";
 import { NavDocuments } from "@/components/layout/sidebar/nav-documents";
 import { NavMain } from "@/components/layout/sidebar/nav-main";
 import { NavSecondary } from "@/components/layout/sidebar/nav-secondary";
+import type { SidebarUser } from "@/components/layout/sidebar/types";
 import { NavUser } from "@/components/layout/sidebar/nav-user";
 import {
   Sidebar,
@@ -34,11 +35,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
       title: "Dashboard",
@@ -150,7 +146,11 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
+  user: SidebarUser;
+};
+
+export function AppSidebar({ user, ...props }: AppSidebarProps) {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -173,7 +173,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   );

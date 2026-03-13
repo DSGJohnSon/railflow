@@ -3,6 +3,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getCurrent } from "@/features/auth/actions";
 import Modals from "@/components/layout/modals";
+import type { SidebarUser } from "@/components/layout/sidebar/types";
 import { redirect } from "next/navigation";
 
 interface PostAuthLayoutProps {
@@ -12,6 +13,12 @@ interface PostAuthLayoutProps {
 async function PostAuthLayout({ children }: PostAuthLayoutProps) {
   const user = await getCurrent();
   if (!user) return redirect("/login");
+
+  const sidebarUser: SidebarUser = {
+    name: user.name,
+    email: user.email,
+    image: user.image,
+  };
 
   return (
     <>
@@ -24,7 +31,7 @@ async function PostAuthLayout({ children }: PostAuthLayoutProps) {
           } as React.CSSProperties
         }
       >
-        <AppSidebar variant="inset" />
+        <AppSidebar variant="inset" user={sidebarUser} />
         <SidebarInset>
           <SiteHeader />
           <div className="flex flex-1 flex-col">

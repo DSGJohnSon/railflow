@@ -17,6 +17,7 @@ export const getCurrent = async () => {
 
     return session.user;
   } catch (error) {
-    return error;
+    console.error("Failed to get current user", error);
+    return null;
   }
 };

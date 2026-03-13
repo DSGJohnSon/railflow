@@ -5,7 +5,7 @@ import { useLogout } from "../api/use-logout";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Loader, LogOut, X } from "@hugeicons/core-free-icons";
 
-function LogoutButton({ className }: { className?: string }) {
+export function LogoutButton({ className }: { className?: string }) {
   const { mutate: logout, isPending } = useLogout();
 
   return (

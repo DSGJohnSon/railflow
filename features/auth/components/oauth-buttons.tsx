@@ -13,7 +13,7 @@ export function OAuthButtons() {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/",
+        callbackURL: "/dashboard",
       });
     } catch (error) {
       console.error("Google sign in error:", error);
@@ -26,7 +26,7 @@ export function OAuthButtons() {
     try {
       await authClient.signIn.social({
         provider: "github",
-        callbackURL: "/",
+        callbackURL: "/dashboard",
       });
     } catch (error) {
       console.error("GitHub sign in error:", error);
@@ -51,6 +51,7 @@ export function OAuthButtons() {
         <Button
           variant="outline"
           type="button"
+          className="cursor-pointer"
           disabled={isGoogleLoading || isGitHubLoading}
           onClick={handleGoogleSignIn}
         >
@@ -82,6 +83,7 @@ export function OAuthButtons() {
         <Button
           variant="outline"
           type="button"
+          className="cursor-pointer"
           disabled={isGoogleLoading || isGitHubLoading}
           onClick={handleGitHubSignIn}
         >

@@ -33,6 +33,7 @@ import {
 //ICONS
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ViewIcon, ViewOffIcon } from "@hugeicons/core-free-icons";
+import { OAuthButtons } from "../oauth-buttons";
 
 //CODE OF THE COMPONENT -----------------------------------------
 
@@ -158,6 +159,9 @@ export default function RegisterForm() {
               </Button>
             </Field>
           </CardFooter>
+          <div className="px-4">
+            <OAuthButtons />
+          </div>
         </Card>
       </div>
       <div className="w-1/2 h-full p-8">

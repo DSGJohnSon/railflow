@@ -33,6 +33,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { OAuthButtons } from "../oauth-buttons";
 
 //CODE OF THE COMPONENT -----------------------------------------
 
@@ -137,6 +138,9 @@ export default function LoginForm() {
               </Button>
             </Field>
           </CardFooter>
+          <div className="px-4">
+            <OAuthButtons />
+          </div>
         </Card>
       </div>
       <div className="w-1/2 h-full p-8">
