@@ -135,7 +135,7 @@ function CustomBreadcrumb() {
                   <DropdownMenuLabel>
                     Membre (
                     {
-                      organizations?.data.filter((org) => org.role !== "OWNER")
+                      organizations?.data.filter((org: { role: string }) => org.role !== "OWNER")
                         .length
                     }
                     )
