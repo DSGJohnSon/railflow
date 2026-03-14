@@ -28,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <body className={`${manrope.className} antialiased`}>
+      <body className={`${manrope.className} antialiased bg-white`}>
         <QueryProvider>
           <TooltipProvider>
             <NuqsAdapter>{children}</NuqsAdapter>

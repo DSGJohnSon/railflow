@@ -15,6 +15,7 @@ const routes = app
   .route("/users/me/projects", projectsMeRoutes)
   
   .notFound((c) => {
+    console.log(c.req.path);
     return c.json({success: false, error: "Route non trouvee" }, 404);
   })
   .onError((err, c) => {
