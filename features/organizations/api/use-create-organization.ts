@@ -1,13 +1,13 @@
 import { client } from "@/lib/rpc";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { InferRequestType, InferResponseType } from "hono";
+import { InferRequestType } from "hono";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { organizationKeys } from "../keys";
 
-type ResponseType = InferResponseType<
+/* type ResponseType = InferResponseType<
   (typeof client.api.organizations)["$post"]
->;
+>; */
 type RequestType = InferRequestType<
   (typeof client.api.organizations)["$post"]
 >;

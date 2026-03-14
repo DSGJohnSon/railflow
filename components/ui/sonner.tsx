@@ -23,7 +23,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           <HugeiconsIcon
             icon={CheckmarkCircle02Icon}
             strokeWidth={2}
-            className="size-4 text-green-600 dark:text-green-400"
+            className="size-4 text-lime-600 dark:text-lime-400"
           />
         ),
         info: (
@@ -72,7 +72,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           cancelButton:
             "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground font-sans",
           success:
-            "!bg-green-200/90 !text-green-900 !border-green-600 dark:!bg-green-950/30 dark:!text-green-200 dark:!border-green-800/50 [--toast-timer:theme(colors.green.600)]",
+            "!bg-lime-200/90 !text-lime-900 !border-lime-600 dark:!bg-lime-950/30 dark:!text-lime-200 dark:!border-lime-800/50 [--toast-timer:theme(colors.lime.600)]",
           error:
             "!bg-red-200/90 !text-red-900 !border-red-600 dark:!bg-red-950/30 dark:!text-red-200 dark:!border-red-800/50 [--toast-timer:theme(colors.red.600)]",
           warning:

@@ -26,6 +26,7 @@ export const useLogin = () => {
       return result;
     },
     onSuccess: () => {
+      localStorage.setItem("railflow_last_used_auth", "email");
       toast.success("Connexion réussie", {
         description: "Redirection vers votre espace...",
       });

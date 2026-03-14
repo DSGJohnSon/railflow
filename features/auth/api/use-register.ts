@@ -28,6 +28,7 @@ export const useRegister = () => {
       return result;
     },
     onSuccess: () => {
+      localStorage.setItem("railflow_last_used_auth", "email");
       toast.success("Inscription réussie", {
         description: "Redirection vers votre espace...",
       });

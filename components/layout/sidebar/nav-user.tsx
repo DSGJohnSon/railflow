@@ -20,7 +20,6 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Loader,
   LogOut,
-  Logout01Icon,
   MoreVerticalCircle01Icon,
 } from "@hugeicons/core-free-icons";
 import { useLogout } from "@/features/auth/api/use-logout";

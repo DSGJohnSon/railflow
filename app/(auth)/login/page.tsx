@@ -1,5 +1,6 @@
 import { getCurrent } from "@/features/auth/actions";
 import LoginForm from "@/features/auth/components/forms/login-form";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 
 async function Page() {
@@ -8,6 +9,15 @@ async function Page() {
 
   return (
     <div className="w-screen h-screen">
+      <div className="absolute top-4 left-4 w-[10svw]">
+        <Image
+          src="/logo/logo_line.svg"
+          alt="Logo Railflow™"
+          className="w-full h-full object-contain"
+          width={1920}
+          height={1080}
+        />
+      </div>
       <LoginForm />
     </div>
   );

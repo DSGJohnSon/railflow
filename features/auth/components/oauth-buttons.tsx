@@ -2,14 +2,27 @@
 
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
+import { Loading03Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useState } from "react";
 
-export function OAuthButtons() {
+export function OAuthButtons({
+  isPendingAuth,
+  setIsPendingAuth,
+  lastUsed
+}: {
+  isPendingAuth: boolean;
+  setIsPendingAuth: (value: boolean) => void;
+  lastUsed?: "email" | "google" | "github" | null;
+}) {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isGitHubLoading, setIsGitHubLoading] = useState(false);
 
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
+    setIsPendingAuth(true);
+    localStorage.setItem("railflow_last_used_auth", "google");
     try {
       await authClient.signIn.social({
         provider: "google",
@@ -18,11 +31,14 @@ export function OAuthButtons() {
     } catch (error) {
       console.error("Google sign in error:", error);
       setIsGoogleLoading(false);
+      setIsPendingAuth(false);
     }
   };
 
   const handleGitHubSignIn = async () => {
     setIsGitHubLoading(true);
+    setIsPendingAuth(true);
+    localStorage.setItem("railflow_last_used_auth", "github");
     try {
       await authClient.signIn.social({
         provider: "github",
@@ -31,6 +47,7 @@ export function OAuthButtons() {
     } catch (error) {
       console.error("GitHub sign in error:", error);
       setIsGitHubLoading(false);
+      setIsPendingAuth(false);
     }
   };
 
@@ -47,16 +64,16 @@ export function OAuthButtons() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="space-y-4">
         <Button
           variant="outline"
           type="button"
-          className="cursor-pointer"
-          disabled={isGoogleLoading || isGitHubLoading}
+          className={cn("cursor-pointer w-full h-auto py-3 text-base relative", lastUsed === "google" && "border-olive-500 bg-lime-950/10")}
+          disabled={isPendingAuth || isGoogleLoading || isGitHubLoading}
           onClick={handleGoogleSignIn}
         >
           {isGoogleLoading ? (
-            <span className="mr-2">⏳</span>
+            <span className="mr-2"><HugeiconsIcon icon={Loading03Icon} className="animate-spin" /></span>
           ) : (
             <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
               <path
@@ -78,20 +95,23 @@ export function OAuthButtons() {
             </svg>
           )}
           Google
+          {lastUsed === "google" && (
+            <span className="absolute top-0 right-0 translate-x-1/4 -translate-y-1/2 text-[0.6rem] text-olive-950 bg-lime-100 border border-olive-500 rounded-full px-2 py-1">Récent</span>
+          )}
         </Button>
 
         <Button
           variant="outline"
           type="button"
-          className="cursor-pointer"
-          disabled={isGoogleLoading || isGitHubLoading}
+          className={cn("cursor-pointer w-full h-auto py-3 text-base relative", lastUsed === "github" && "border-olive-500 bg-lime-950/10")}
+          disabled={isPendingAuth || isGoogleLoading || isGitHubLoading}
           onClick={handleGitHubSignIn}
         >
           {isGitHubLoading ? (
-            <span className="mr-2">⏳</span>
+            <span className="mr-2"><HugeiconsIcon icon={Loading03Icon} className="animate-spin" /></span>
           ) : (
             <svg
-              className="mr-2 h-4 w-4"
+              className="mr-2 h-6 w-6"
               fill="currentColor"
               viewBox="0 0 24 24"
             >
@@ -99,6 +119,9 @@ export function OAuthButtons() {
             </svg>
           )}
           GitHub
+          {lastUsed === "github" && (
+            <span className="absolute top-0 right-0 translate-x-1/4 -translate-y-1/2 text-[0.6rem] text-olive-950 bg-lime-100 border border-olive-500 rounded-full px-2 py-1">Récent</span>
+          )}
         </Button>
       </div>
     </div>

@@ -1,7 +1,7 @@
 //TANSTACK & HONORPC
 import { client } from "@/lib/rpc";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { InferRequestType, InferResponseType } from "hono";
+import { InferRequestType } from "hono";
 
 //KEYS
 import { projectKeys } from "../keys";
@@ -15,9 +15,9 @@ import { useRouter } from "next/navigation";
 // END OF IMPORTS ------------------------------------------------------------------
 
 
-type ResponseType = InferResponseType<
+/* type ResponseType = InferResponseType<
   (typeof client.api.organizations)[":organizationSlug"]["projects"]["$post"]
->;
+>; */
 type RequestType = InferRequestType<
   (typeof client.api.organizations)[":organizationSlug"]["projects"]["$post"]
 >;
