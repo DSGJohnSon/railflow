@@ -3,8 +3,10 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getCurrent } from "@/features/auth/actions";
 import Modals from "@/components/layout/modals";
+import { FlashToast } from "@/components/flash-toast";
 import type { SidebarUser } from "@/components/layout/sidebar/types";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 interface PostAuthLayoutProps {
   children: React.ReactNode;
@@ -23,6 +25,9 @@ async function PostAuthLayout({ children }: PostAuthLayoutProps) {
   return (
     <>
       <Modals />
+      <Suspense>
+        <FlashToast />
+      </Suspense>
       <SidebarProvider
         style={
           {

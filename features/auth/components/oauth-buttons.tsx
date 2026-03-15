@@ -10,11 +10,13 @@ import { useState } from "react";
 export function OAuthButtons({
   isPendingAuth,
   setIsPendingAuth,
-  lastUsed
+  lastUsed,
+  redirectTo,
 }: {
   isPendingAuth: boolean;
   setIsPendingAuth: (value: boolean) => void;
   lastUsed?: "email" | "google" | "github" | null;
+  redirectTo?: string;
 }) {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isGitHubLoading, setIsGitHubLoading] = useState(false);
@@ -26,7 +28,7 @@ export function OAuthButtons({
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/dashboard",
+        callbackURL: redirectTo ?? "/dashboard",
       });
     } catch (error) {
       console.error("Google sign in error:", error);
@@ -42,7 +44,7 @@ export function OAuthButtons({
     try {
       await authClient.signIn.social({
         provider: "github",
-        callbackURL: "/dashboard",
+        callbackURL: redirectTo ?? "/dashboard",
       });
     } catch (error) {
       console.error("GitHub sign in error:", error);

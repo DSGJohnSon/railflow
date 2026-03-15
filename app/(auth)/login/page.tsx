@@ -3,9 +3,14 @@ import LoginForm from "@/features/auth/components/forms/login-form";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
-async function Page() {
+interface PageProps {
+  searchParams: Promise<{ redirectTo?: string }>;
+}
+
+async function Page({ searchParams }: PageProps) {
+  const { redirectTo } = await searchParams;
   const user = await getCurrent();
-  if (user) redirect("/dashboard");
+  if (user) redirect(redirectTo ?? "/dashboard");
 
   return (
     <div className="w-screen h-screen">
@@ -18,7 +23,7 @@ async function Page() {
           height={1080}
         />
       </div>
-      <LoginForm />
+      <LoginForm redirectTo={redirectTo} />
     </div>
   );
 }

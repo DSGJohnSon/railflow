@@ -1,28 +1,28 @@
-"use client"
+import { getCurrent } from "@/features/auth/actions";
+import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
+import OrganizationPageClient from "./_components/organization-page-client";
 
-import { Button } from "@/components/ui/button";
-import { useCreateProjectModal } from "@/features/projects/hooks/use-create-project-modal";
-import { FolderAddIcon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+interface PageProps {
+  params: Promise<{ organizationSlug: string }>;
+}
 
-function Page() {
+async function Page({ params }: PageProps) {
+  const { organizationSlug } = await params;
 
-  const { setIsOpen } = useCreateProjectModal();
+  const user = await getCurrent();
+  if (!user) redirect("/login");
 
-  return (
-    <div className="flex justify-center items-center flex-col gap-4">
-      Page Organization
-      <Button
-                variant="default"
-                size="lg"
-                onClick={() => setIsOpen(true)}
-                className="cursor-pointer"
-              >
-                <HugeiconsIcon icon={FolderAddIcon} className="w-4 h-4 mr-2" />
-                Nouveau projet
-              </Button>
-    </div>
-  );
+  const membership = await prisma.organizationMember.findFirst({
+    where: {
+      organization: { slug: organizationSlug },
+      userId: user.id,
+    },
+  });
+
+  if (!membership) redirect("/dashboard?flash=not-member");
+
+  return <OrganizationPageClient />;
 }
 
 export default Page;

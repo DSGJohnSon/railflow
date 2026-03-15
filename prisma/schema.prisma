@@ -27,10 +27,11 @@ model User {
   accounts Account[]
   sessions Session[]
 
-  organizations       Organization[]
-  organizationMembers OrganizationMember[]
-  projects            Project[]
-  projectMembers      ProjectMember[]
+  organizations             Organization[]
+  organizationMembers       OrganizationMember[]
+  organizationInvitationsSent OrganizationInvitation[] @relation("InvitationsSent")
+  projects                  Project[]
+  projectMembers            ProjectMember[]
 
   @@map("user")
 }
@@ -92,7 +93,8 @@ model Organization {
   ownerId String
   owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
-  organizationMembers OrganizationMember[]
+  organizationMembers  OrganizationMember[]
+  invitations          OrganizationInvitation[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -116,6 +118,32 @@ model OrganizationMember {
 
   @@unique([organizationId, userId])
   @@map("organization_member")
+}
+
+model OrganizationInvitation {
+  id    String           @id @default(cuid())
+  email String
+  token String           @unique @default(cuid())
+  role  Role             @default(MEMBER)
+  status InvitationStatus @default(PENDING)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  invitedById String
+  invitedBy   User   @relation("InvitationsSent", fields: [invitedById], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("organization_invitation")
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  CANCELLED
 }
 
 enum Role {

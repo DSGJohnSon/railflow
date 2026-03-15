@@ -31,7 +31,7 @@ import { OAuthButtons } from "../oauth-buttons";
 
 //CODE OF THE COMPONENT -----------------------------------------
 
-export default function LoginForm() {
+export default function LoginForm({ redirectTo }: { redirectTo?: string }) {
   const [showPassword, setShowPassword] = useState(false);
 
   const { mutate, isPending } = useLogin();
@@ -76,7 +76,7 @@ export default function LoginForm() {
               Entrez vos identifiants pour accéder à votre espace.
             </p>
             <Link
-              href="/register"
+              href={redirectTo ? `/register?redirectTo=${encodeURIComponent(redirectTo)}` : "/register"}
               className="inline-block text-sm font-medium text-center my-4 mb-10"
             >
               Pas encore de compte ?{" "}
@@ -177,7 +177,7 @@ export default function LoginForm() {
             </Button>
           </Field>
           <div>
-            <OAuthButtons isPendingAuth={isPending || isPendingOAuth} setIsPendingAuth={setIsPendingOAuth} lastUsed={lastUsed} />
+            <OAuthButtons isPendingAuth={isPending || isPendingOAuth} setIsPendingAuth={setIsPendingOAuth} lastUsed={lastUsed} redirectTo={redirectTo} />
           </div>
         </div>
       </div>

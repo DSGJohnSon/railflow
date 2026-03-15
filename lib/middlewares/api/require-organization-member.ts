@@ -50,7 +50,7 @@ export const requireOrganizationMember = createMiddleware<AppEnv>(
         403,
       );
     }
-
+    
     c.set("organizationRole", organizationRole);
 
     await next();
