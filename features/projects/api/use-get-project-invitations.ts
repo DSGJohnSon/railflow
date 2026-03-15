@@ -1,0 +1,17 @@
+import { useQuery } from "@tanstack/react-query";
+import { client } from "@/lib/rpc";
+import { projectKeys } from "../keys";
+
+export const useGetProjectInvitations = (organizationSlug: string, projectSlug: string) => {
+  return useQuery({
+    queryKey: projectKeys.invitations(organizationSlug, projectSlug),
+    queryFn: async () => {
+      const res = await client.api.organizations[":organizationSlug"].projects[":projectSlug"].invitations.$get({
+        param: { organizationSlug, projectSlug },
+      });
+      if (!res.ok) throw new Error("Erreur lors du chargement des invitations");
+      const json = await res.json();
+      return json.data;
+    },
+  });
+};

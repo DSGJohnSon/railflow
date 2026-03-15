@@ -1,4 +1,4 @@
-import type { Role } from "@prisma/client";
+import type { Role, ProjectRole } from "@prisma/client";
 
 export type AppVariables = {
   user: {
@@ -22,6 +22,15 @@ export type AppVariables = {
     updatedAt: Date;
   };
   organizationRole: Role;
+  project: {
+    id: string;
+    slug: string;
+    name: string;
+    organizationId: string;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+  projectRole: ProjectRole;
 };
 
 export type AppEnv = {

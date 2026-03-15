@@ -9,6 +9,10 @@ const FLASH_MESSAGES: Record<string, { title: string; description?: string }> = 
     title: "Accès refusé",
     description: "Vous n'êtes pas membre de cette organisation.",
   },
+  "not-project-member": {
+    title: "Accès refusé",
+    description: "Vous n'êtes pas membre de ce projet.",
+  },
 };
 
 export function FlashToast() {

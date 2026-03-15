@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useAcceptInvitation } from "@/features/invitations/api/use-accept-invitation";
+import { useAcceptOrgInvitation } from "@/features/organizations/api/use-accept-org-invitation";
 import { Building04Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
@@ -18,18 +18,22 @@ type Invitation = {
   invitedBy: { name: string; image: string | null };
 } | null;
 
-interface InvitationActionsProps {
+interface OrgJoinActionsProps {
   invitation: Invitation;
   token: string;
+  organizationSlug: string;
   isAuthenticated: boolean;
 }
 
-export default function InvitationActions({
+export default function OrgJoinActions({
   invitation,
   token,
+  organizationSlug,
   isAuthenticated,
-}: InvitationActionsProps) {
-  const { mutate: accept, isPending } = useAcceptInvitation(token);
+}: OrgJoinActionsProps) {
+  const { mutate: accept, isPending } = useAcceptOrgInvitation(organizationSlug);
+
+  const currentPath = `/org/${organizationSlug}/join?token=${token}`;
 
   if (!invitation) {
     return (
@@ -108,7 +112,7 @@ export default function InvitationActions({
         {isAuthenticated ? (
           <Button
             className="w-full"
-            onClick={() => accept()}
+            onClick={() => accept(token)}
             disabled={isPending}
           >
             {isPending ? "Rejoindre en cours..." : "Rejoindre l'organisation"}
@@ -116,12 +120,12 @@ export default function InvitationActions({
         ) : (
           <>
             <Button className="w-full" asChild>
-              <Link href={`/login?redirectTo=/invitations/${token}`}>
+              <Link href={`/login?redirectTo=${encodeURIComponent(currentPath)}`}>
                 Se connecter pour rejoindre
               </Link>
             </Button>
             <Button variant="outline" className="w-full" asChild>
-              <Link href={`/register?redirectTo=/invitations/${token}`}>
+              <Link href={`/register?redirectTo=${encodeURIComponent(currentPath)}`}>
                 Créer un compte
               </Link>
             </Button>

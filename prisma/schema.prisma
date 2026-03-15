@@ -30,8 +30,8 @@ model User {
   organizations             Organization[]
   organizationMembers       OrganizationMember[]
   organizationInvitationsSent OrganizationInvitation[] @relation("InvitationsSent")
-  projects                  Project[]
   projectMembers            ProjectMember[]
+  projectInvitationsSent    ProjectInvitation[]      @relation("ProjectInvitationsSent")
 
   @@map("user")
 }
@@ -162,10 +162,8 @@ model Project {
   slug        String
   description String?
 
-  ownerId String
-  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-
   projectMembers ProjectMember[]
+  invitations    ProjectInvitation[]
 
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -178,8 +176,8 @@ model Project {
 }
 
 model ProjectMember {
-  id   String @id @default(cuid())
-  role Role
+  id   String      @id @default(cuid())
+  role ProjectRole
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
@@ -192,4 +190,30 @@ model ProjectMember {
 
   @@unique([projectId, userId])
   @@map("project_member")
+}
+
+model ProjectInvitation {
+  id     String            @id @default(cuid())
+  email  String
+  token  String            @unique @default(cuid())
+  role   ProjectRole       @default(COLLABORATOR)
+  status InvitationStatus  @default(PENDING)
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  invitedById String
+  invitedBy   User   @relation("ProjectInvitationsSent", fields: [invitedById], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("project_invitation")
+}
+
+enum ProjectRole {
+  ADMIN
+  COLLABORATOR
+  VISITOR
 }

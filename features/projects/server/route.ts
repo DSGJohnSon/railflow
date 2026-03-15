@@ -29,7 +29,27 @@ const app = new Hono()
     async (c) => {
       const user = c.get("user");
       const organization = c.get("organization");
-      const { name, slug, description } = c.req.valid("json");
+      const { name, slug, description, initialMembers } = c.req.valid("json");
+
+      // S'assure que les userId de initialMembers sont bien membres de l'org
+      const orgMemberIds = new Set(
+        (
+          await prisma.organizationMember.findMany({
+            where: { organizationId: organization.id },
+            select: { userId: true },
+          })
+        ).map((m) => m.userId),
+      );
+
+      const validMembers = (initialMembers ?? []).filter(
+        (m) => orgMemberIds.has(m.userId) && m.userId !== user.id && m.userId !== organization.ownerId,
+      );
+
+      // Le owner de l'org est toujours ajouté en ADMIN (sauf s'il est le créateur)
+      const ownerEntry =
+        organization.ownerId !== user.id
+          ? [{ role: "ADMIN" as const, userId: organization.ownerId }]
+          : [];
 
       try {
         const project = await prisma.project.create({
@@ -37,13 +57,13 @@ const app = new Hono()
             name,
             slug,
             description: description ?? "",
-            ownerId: user.id,
             organizationId: organization.id,
             projectMembers: {
-              create: {
-                role: "OWNER",
-                userId: user.id,
-              },
+              create: [
+                { role: "ADMIN", userId: user.id },
+                ...ownerEntry,
+                ...validMembers.map((m) => ({ role: m.role, userId: m.userId })),
+              ],
             },
           },
         });

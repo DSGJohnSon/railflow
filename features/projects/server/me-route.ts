@@ -6,7 +6,6 @@ import { prisma } from "@/lib/prisma";
 
 //MIDDLEWARES
 import { requireAuth } from "@/lib/middlewares/api/require-auth";
-import { Role } from "@prisma/client";
 
 // END OF IMPORTS ------------------------------------------------------------------
 
@@ -40,7 +39,7 @@ const app = new Hono()
 
     const serializedProjects = projects.map(
       (project: {
-        role: Role;
+        role: string;
         project: {
           id: string;
           name: string;

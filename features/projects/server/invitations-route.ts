@@ -5,28 +5,32 @@ import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/middlewares/api/require-auth";
 import { loadOrganization } from "@/lib/middlewares/api/load-organization";
 import { requireOrganizationMember } from "@/lib/middlewares/api/require-organization-member";
-import { requireOrganizationAdmin } from "@/lib/middlewares/api/require-organization-admin";
-import { inviteMemberSchema } from "../schemas";
-import { sendInvitationEmail } from "@/lib/email";
+import { loadProject } from "@/lib/middlewares/api/load-project";
+import { requireProjectMember } from "@/lib/middlewares/api/require-project-member";
+import { requireProjectAdmin } from "@/lib/middlewares/api/require-project-admin";
+import { inviteProjectMemberSchema } from "../schemas";
+import { sendProjectInvitationEmail } from "@/lib/email";
 import { isUniqueConstraint } from "@/lib/prisma-errors";
 
 // END OF IMPORTS ------------------------------------------------------------------
 
 const app = new Hono()
   // ************************
-  // Lister les invitations
+  // Lister les invitations d'un projet
   // ************************
   .get(
     "/",
     requireAuth,
     loadOrganization,
     requireOrganizationMember,
-    requireOrganizationAdmin,
+    loadProject,
+    requireProjectMember,
+    requireProjectAdmin,
     async (c) => {
-      const organization = c.get("organization");
+      const project = c.get("project");
 
-      const invitations = await prisma.organizationInvitation.findMany({
-        where: { organizationId: organization.id },
+      const invitations = await prisma.projectInvitation.findMany({
+        where: { projectId: project.id },
         include: {
           invitedBy: {
             select: { id: true, name: true, email: true, image: true },
@@ -40,42 +44,42 @@ const app = new Hono()
   )
 
   // ************************
-  // Créer une invitation
+  // Créer une invitation de projet
   // ************************
   .post(
     "/",
     requireAuth,
     loadOrganization,
     requireOrganizationMember,
-    requireOrganizationAdmin,
-    zValidator("json", inviteMemberSchema),
+    loadProject,
+    requireProjectMember,
+    requireProjectAdmin,
+    zValidator("json", inviteProjectMemberSchema),
     async (c) => {
       const organization = c.get("organization");
+      const project = c.get("project");
       const user = c.get("user");
       const { email, role, expiresInHours } = c.req.valid("json");
 
       const expiresAt = new Date(Date.now() + expiresInHours * 60 * 60 * 1000);
 
-      const existingMember = await prisma.organizationMember.findFirst({
+      const existingMember = await prisma.projectMember.findFirst({
         where: {
-          organizationId: organization.id,
+          projectId: project.id,
           user: { email },
         },
       });
 
       if (existingMember) {
         return c.json(
-          {
-            success: false,
-            error: "Cet utilisateur est déjà membre de l'organisation",
-          },
+          { success: false, error: "Cet utilisateur est déjà membre du projet" },
           409,
         );
       }
 
-      const pendingInvitation = await prisma.organizationInvitation.findFirst({
+      const pendingInvitation = await prisma.projectInvitation.findFirst({
         where: {
-          organizationId: organization.id,
+          projectId: project.id,
           email,
           status: "PENDING",
           expiresAt: { gt: new Date() },
@@ -84,30 +88,29 @@ const app = new Hono()
 
       if (pendingInvitation) {
         return c.json(
-          {
-            success: false,
-            error: "Une invitation en attente existe déjà pour cet email",
-          },
+          { success: false, error: "Une invitation en attente existe déjà pour cet email" },
           409,
         );
       }
 
       try {
-        const invitation = await prisma.organizationInvitation.create({
+        const invitation = await prisma.projectInvitation.create({
           data: {
             email,
             role,
             expiresAt,
-            organizationId: organization.id,
+            projectId: project.id,
             invitedById: user.id,
           },
         });
 
-        await sendInvitationEmail({
+        await sendProjectInvitationEmail({
           to: email,
           inviterName: user.name,
           organizationName: organization.name,
           organizationSlug: organization.slug,
+          projectName: project.name,
+          projectSlug: project.slug,
           token: invitation.token,
         });
 
@@ -115,10 +118,7 @@ const app = new Hono()
       } catch (error) {
         if (isUniqueConstraint(error)) {
           return c.json(
-            {
-              success: false,
-              error: "Une invitation pour cet email existe déjà",
-            },
+            { success: false, error: "Une invitation pour cet email existe déjà" },
             409,
           );
         }
@@ -128,20 +128,22 @@ const app = new Hono()
   )
 
   // ************************
-  // Annuler une invitation
+  // Annuler une invitation de projet
   // ************************
   .patch(
     "/:invitationId/cancel",
     requireAuth,
     loadOrganization,
     requireOrganizationMember,
-    requireOrganizationAdmin,
+    loadProject,
+    requireProjectMember,
+    requireProjectAdmin,
     async (c) => {
-      const organization = c.get("organization");
+      const project = c.get("project");
       const { invitationId } = c.req.param();
 
-      const invitation = await prisma.organizationInvitation.findUnique({
-        where: { id: invitationId, organizationId: organization.id },
+      const invitation = await prisma.projectInvitation.findUnique({
+        where: { id: invitationId, projectId: project.id },
       });
 
       if (!invitation) {
@@ -150,15 +152,12 @@ const app = new Hono()
 
       if (invitation.status !== "PENDING") {
         return c.json(
-          {
-            success: false,
-            error: "Seules les invitations en attente peuvent être annulées",
-          },
+          { success: false, error: "Seules les invitations en attente peuvent être annulées" },
           409,
         );
       }
 
-      const updated = await prisma.organizationInvitation.update({
+      const updated = await prisma.projectInvitation.update({
         where: { id: invitationId },
         data: { status: "CANCELLED" },
       });

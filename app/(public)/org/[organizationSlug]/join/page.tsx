@@ -2,14 +2,36 @@ import { prisma } from "@/lib/prisma";
 import { getCurrent } from "@/features/auth/actions";
 import Image from "next/image";
 import Link from "next/link";
-import InvitationActions from "./invitation-actions";
+import OrgJoinActions from "./join-actions";
 
 interface PageProps {
-  params: Promise<{ token: string }>;
+  params: Promise<{ organizationSlug: string }>;
+  searchParams: Promise<{ token?: string }>;
 }
 
-async function Page({ params }: PageProps) {
-  const { token } = await params;
+async function Page({ params, searchParams }: PageProps) {
+  const { organizationSlug } = await params;
+  const { token } = await searchParams;
+
+  if (!token) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
+        <p className="text-sm text-muted-foreground">Lien d&apos;invitation invalide.</p>
+      </div>
+    );
+  }
+
+  const organization = await prisma.organization.findUnique({
+    where: { slug: organizationSlug },
+  });
+
+  if (!organization) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
+        <p className="text-sm text-muted-foreground">Organisation introuvable.</p>
+      </div>
+    );
+  }
 
   const [rawInvitation, user] = await Promise.all([
     prisma.organizationInvitation.findUnique({
@@ -23,6 +45,10 @@ async function Page({ params }: PageProps) {
   ]);
 
   let invitation = rawInvitation;
+
+  if (invitation && invitation.organizationId !== organization.id) {
+    invitation = null;
+  }
 
   if (invitation && invitation.status === "PENDING" && invitation.expiresAt < new Date()) {
     await prisma.organizationInvitation.update({
@@ -48,9 +74,10 @@ async function Page({ params }: PageProps) {
 
       <main className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-md">
-          <InvitationActions
+          <OrgJoinActions
             invitation={invitation}
             token={token}
+            organizationSlug={organizationSlug}
             isAuthenticated={!!user}
           />
         </div>
